@@ -43,8 +43,14 @@ public class MainActivity extends Activity implements MasterFragment.OnFragmentI
         }
     }
 
-    @Override
-    public void onFragmentInteraction(String text) {
-        MasterFragment frag = (MasterFragment)getFragmentManager().findFragmentByTag(MasterFragment.TAG);
+    public void displayMovie(String _text){
+        DetailsFragment frag = (DetailsFragment)getFragmentManager().findFragmentByTag(DetailsFragment.TAG);
+
+        if(frag == null){
+            frag = DetailsFragment.newInstance(_text);
+            getFragmentManager().beginTransaction().replace(R.id.container2, frag, DetailsFragment.TAG).commit();
+        } else {
+            frag.setDetailsText(_text);
+        }
     }
 }

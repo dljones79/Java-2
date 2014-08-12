@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -17,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -60,6 +63,10 @@ public class MasterFragment extends Fragment {
 
     public MasterFragment() {
         // Required empty public constructor
+    }
+
+    public interface OnFragmentInteractionListener {
+        public void displayMovie(String string);
     }
 
     @Override
@@ -112,17 +119,37 @@ public class MasterFragment extends Fragment {
                 }
             }
         });
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.i(TAG, "List item clicked.");
+                TextView itemSelected = (TextView) view;
+                String selectedString = itemSelected.getText().toString();
+                Log.i(TAG, selectedString);
+                mListener.displayMovie(selectedString);
+            }
+        });
+
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
+        if (activity instanceof OnFragmentInteractionListener){
+            mListener = (OnFragmentInteractionListener)activity;
+        } else {
+            throw new IllegalArgumentException("Containing activity must implement OnFragmentInteractionLIstener interface.");
+        }
+        /*
         try {
             mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+        */
     }
 
 
@@ -137,9 +164,6 @@ public class MasterFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
-        public void onFragmentInteraction(String text);
-    }
 
     private class GetMovieData extends AsyncTask<URL, Integer, JSONObject> {
 
@@ -147,10 +171,6 @@ public class MasterFragment extends Fragment {
         View view = getView();
         MasterFragment frag;
         JSONObject convertedData;
-
-        protected void onPreExecute(){
-            //((ProgressBar) view.findViewById(R.id.progressBar)).setVisibility(View.VISIBLE);
-        }
 
         @Override
         protected JSONObject doInBackground(URL... urls) {
@@ -204,12 +224,18 @@ public class MasterFragment extends Fragment {
             } catch (Exception e) {
                 Log.e(TAG, "Failure to parse data.");
             }
+
             return apiData;
         } // End of DoInBackground
 
         protected void onPostExecute(JSONObject apiData){
             Log.i(TAG, "onPostExecute working.");
             popListView(listContents);
+
+            EditText query = (EditText)view.findViewById(R.id.editText);
+            query.setText("");
+
+
         }
     } // End of GetMovieData
 
@@ -221,8 +247,6 @@ public class MasterFragment extends Fragment {
         mListView.setAdapter(arrayAdapter);
 
     }
-
-
 }
 
 
