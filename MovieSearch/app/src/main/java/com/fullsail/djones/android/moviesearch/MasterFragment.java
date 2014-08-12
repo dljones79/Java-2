@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
@@ -55,6 +56,8 @@ public class MasterFragment extends Fragment {
     private ArrayAdapter arrayAdapter;
     private List<String> listContents;
     private Integer length;
+    private JSONObject apiData = null;
+    private JSONArray apiArray = null;
 
     public static MasterFragment newInstance() {
         MasterFragment fragment = new MasterFragment();
@@ -66,7 +69,7 @@ public class MasterFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        public void displayMovie(String string);
+        public void displayMovie(String _text, JSONObject _object);
     }
 
     @Override
@@ -123,11 +126,18 @@ public class MasterFragment extends Fragment {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                JSONObject selectedObj = null;
                 Log.i(TAG, "List item clicked.");
                 TextView itemSelected = (TextView) view;
                 String selectedString = itemSelected.getText().toString();
                 Log.i(TAG, selectedString);
-                mListener.displayMovie(selectedString);
+                try {
+                    selectedObj = apiArray.getJSONObject(i);
+                    Log.i(TAG, "Selected Obj: " + selectedObj.toString());
+                } catch (Exception e) {
+                    Log.e(TAG, "Can't pull JSONObj");
+                }
+                mListener.displayMovie(selectedString, selectedObj);
             }
         });
 
@@ -191,12 +201,12 @@ public class MasterFragment extends Fragment {
 
             // Convert the API String to a JSONObject
 
-            JSONObject apiData;
-            JSONArray apiArray;
+            //JSONObject apiData;
+            //JSONArray apiArray;
 
             try {
                 apiData = new JSONObject(jsonString);
-                Log.i(TAG, apiData.toString());
+                Log.i(TAG, "APIData" + apiData.toString());
             } catch (Exception e) {
                 Log.e(TAG, "Can't convert API Response to JSON");
                 apiData = null;

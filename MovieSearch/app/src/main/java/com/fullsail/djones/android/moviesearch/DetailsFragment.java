@@ -4,12 +4,17 @@ package com.fullsail.djones.android.moviesearch;
 
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
+
+import java.util.concurrent.ExecutionException;
 
 
 /**
@@ -22,12 +27,15 @@ public class DetailsFragment extends Fragment {
 
     private static final String ARG_Text = "DetailsFragment.ARG_TEXT";
 
-    public static DetailsFragment newInstance(String _text) {
+    private static JSONObject passedMovieObject = null;
+
+    public static DetailsFragment newInstance(String _text, JSONObject _object) {
         DetailsFragment frag = new DetailsFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_Text, _text);
         frag.setArguments(args);
+        frag.setMovieObject(_object);
 
         return frag;
     }
@@ -54,6 +62,27 @@ public class DetailsFragment extends Fragment {
     public void setDetailsText(String _text) {
         TextView textView = (TextView)getView().findViewById(R.id.textView);
         textView.setText(_text);
+        TextView titleText = (TextView)getView().findViewById(R.id.titleText);
+        titleText.setText(_text);
+
+        TextView yearText = (TextView)getView().findViewById(R.id.yearText);
+        TextView ratingText = (TextView)getView().findViewById(R.id.ratingText);
+        TextView runtimeText = (TextView)getView().findViewById(R.id.runtimeText);
+
+        Log.i(TAG, passedMovieObject.toString());
+
+        try {
+            yearText.setText(passedMovieObject.getString("year"));
+            ratingText.setText(passedMovieObject.getString("mpaa_rating"));
+            runtimeText.setText((passedMovieObject.getString("runtime")) + " minutes.");
+        } catch (Exception e) {
+            Log.e(TAG, "Can't pull strings.");
+        }
     }
+
+    public void setMovieObject(JSONObject movieObject) {
+        passedMovieObject = movieObject;
+    }
+
 
 }
