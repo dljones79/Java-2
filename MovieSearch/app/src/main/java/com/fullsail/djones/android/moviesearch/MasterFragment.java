@@ -38,6 +38,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -166,11 +168,6 @@ public class MasterFragment extends Fragment {
                         //Log.i(TAG, "No stored data.");
                         showAlert("Error", "No Stored Data!");
                     }
-
-                    /*)
-                    pullDataFromFile(getActivity(), FILENAME);
-                    Log.i(TAG, buffer.toString());
-                    */
                 } // end else
             } // end onClick
         }); // end on click listener for search
@@ -329,20 +326,28 @@ public class MasterFragment extends Fragment {
             e.printStackTrace();
         }
 
-        /// Having trouble getting object to save **Not Serializable error
-        /*
-        try{
-            FileOutputStream fos = this.getActivity().openFileOutput(_filename, this.getActivity().MODE_PRIVATE);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
+    } // end of writeDataToFile
 
-            oos.writeObject(mObj);
-            oos.close();
-            Log.i(TAG, "Data Saved.");
-        } catch (Exception e) {
+    //TODO Figure out how to read these objects back from file
+    /*
+    private String readObjectFromFile(String _filename) {
+        try{
+            FileInputStream fin = this.getActivity().openFileInput(_filename);
+            ObjectInputStream ois = new ObjectInputStream(fin);
+
+            MovieObj mObj = (MovieObj)ois.readObject();
+            ois.close();
+
+
+
+        }catch (IOException e){
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        */
-    } // end of writeDataToFile
+        return null;
+    }
+    */
 
     // Custom method to load stored data
     private String pullDataFromFile(String _filename){
