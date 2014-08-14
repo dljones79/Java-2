@@ -69,11 +69,12 @@ public class MasterFragment extends Fragment {
     private Integer length;
     private JSONObject apiData = null;
     private JSONArray apiArray = null;
-    private MovieObj movieObj;
     private String pulledData;
     private JSONArray jArray = null;
+    private List<MovieObj> objectList;
 
     public static final String FILENAME = "data.txt";
+    public static final String OBJFILENAME = "objects.txt";
 
     public static MasterFragment newInstance() {
         MasterFragment fragment = new MasterFragment();
@@ -216,12 +217,11 @@ public class MasterFragment extends Fragment {
 
         final String TAG = "Async Task";
         View view = getView();
-        MasterFragment frag;
-        JSONObject convertedData;
 
         @Override
         protected JSONObject doInBackground(URL... urls) {
             String jsonString = "";
+            objectList = new ArrayList<MovieObj>();
 
             // Collect the string responses from the API
             for (URL queryString : urls){
@@ -247,11 +247,20 @@ public class MasterFragment extends Fragment {
             // Call custom method to parse json
             parseJSON(apiData);
 
-            /*  Not being used.  Trying to create custom object and save it out.
-            //Create custom MovieObj
-            movieObj = new MovieObj();
-            movieObj.setMovieObj(apiData);
-            */
+            // This try/catch block saves an array of custom MovieObj objects
+            try {
+                for (int i = 0; i < apiArray.length(); i++){
+                    Integer count = i;
+                    MovieObj movieObj = new MovieObj(apiArray, count);
+                    objectList.add(movieObj);
+                }
+            } catch (Exception e){
+                e.printStackTrace();
+                Log.i(TAG, "nope");
+            }
+
+            Log.i(TAG, "Object List: " + objectList.toString());
+            writeObjectToFile(OBJFILENAME, objectList);
 
             // Save data to file
             String str = apiArray.toString();
@@ -270,6 +279,7 @@ public class MasterFragment extends Fragment {
     } // End of GetMovieData
 
     private void parseJSON(JSONObject obj){
+        MovieObj movie = null;
         try {
             apiArray = (obj != null) ? obj.getJSONArray("movies") : null;
             Log.d("apiArray", apiArray.toString());
@@ -296,6 +306,17 @@ public class MasterFragment extends Fragment {
         mListView.setAdapter(arrayAdapter);
     } // end popListView
 
+    private void writeObjectToFile(String _filename, List<MovieObj> _obj){
+        try {
+            FileOutputStream fos = this.getActivity().openFileOutput(_filename, this.getActivity().MODE_PRIVATE);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            oos.writeObject(_obj);
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     // Custom method to save data
     private void writeDataToFile(String _filename, String _data) {
 
