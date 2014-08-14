@@ -1,11 +1,19 @@
+// David Jones
+// Java 2 - 1408
+// Full Sail University
+
 package com.fullsail.djones.android.moviesearch;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Environment;
+import android.text.method.MovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,12 +28,17 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -51,33 +64,36 @@ public class MasterFragment extends Fragment {
 
     Boolean isConnected = false;
     ConnectionDetection detector;
-    private ArrayList arrList;
     private ListView mListView;
-    private ArrayAdapter arrayAdapter;
     private List<String> listContents;
     private Integer length;
     private JSONObject apiData = null;
     private JSONArray apiArray = null;
+    private MovieObj movieObj;
+    private String pulledData;
+    private JSONArray jArray = null;
+
+    public static final String FILENAME = "data.txt";
 
     public static MasterFragment newInstance() {
         MasterFragment fragment = new MasterFragment();
         return fragment;
-    }
+    } // end MasterFragment newInstance()
 
     public MasterFragment() {
         // Required empty public constructor
-    }
+    } // end MasterFragment()
 
     public interface OnFragmentInteractionListener {
         public void displayMovie(String _text, JSONObject _object);
-    }
+    } // end OnFragmentInteractionListener interface
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_master, container, false);
-    }
+    } // end onCreateView method
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -118,10 +134,45 @@ public class MasterFragment extends Fragment {
                         Log.e(TAG, "No data found." + queryText);
                     }
                 } else if (!isConnected) {
-                    Log.i(TAG, "Not Connected");
-                }
-            }
-        });
+                    //Log.i(TAG, "Not Connected");
+
+                    // If device isn't connected to internet...alert will show.
+                    showAlert("No Connection", "Attempting to retrieve data from file.");
+
+                    pulledData = pullDataFromFile(FILENAME);
+
+                    if (pulledData != null){
+                        //Log.i(TAG, "Data pulled from file." + pulledData);
+                        makeToast("Data pulled from file.");
+
+                        try {
+                            jArray = new JSONArray(pulledData);
+
+                            listContents = new ArrayList<String>(jArray.length());
+                            length = jArray.length();
+
+                            for (int i = 0; i < length; i++){
+                                listContents.add(jArray.getJSONObject(i).getString("title"));
+                            } // end for loop to add titles to listContents array
+
+                            popListView(listContents);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    } else {
+                        //Log.i(TAG, "No stored data.");
+                        showAlert("Error", "No Stored Data!");
+                    }
+
+                    /*)
+                    pullDataFromFile(getActivity(), FILENAME);
+                    Log.i(TAG, buffer.toString());
+                    */
+                } // end else
+            } // end onClick
+        }); // end on click listener for search
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
@@ -131,17 +182,24 @@ public class MasterFragment extends Fragment {
                 TextView itemSelected = (TextView) view;
                 String selectedString = itemSelected.getText().toString();
                 Log.i(TAG, selectedString);
-                try {
-                    selectedObj = apiArray.getJSONObject(i);
-                    Log.i(TAG, "Selected Obj: " + selectedObj.toString());
-                } catch (Exception e) {
-                    Log.e(TAG, "Can't pull JSONObj");
+                if (isConnected) {
+                    try {
+                        selectedObj = apiArray.getJSONObject(i);
+                        Log.i(TAG, "Selected Obj: " + selectedObj.toString());
+                    } catch (Exception e) {
+                        Log.e(TAG, "Can't pull JSONObj");
+                    }
+                } else if (!isConnected){
+                    try {
+                        selectedObj = jArray.getJSONObject(i);
+                    } catch (Exception e) {
+                        Log.e(TAG, "No data to retrieve.");
+                    }
                 }
                 mListener.displayMovie(selectedString, selectedObj);
-            }
-        });
-
-    }
+            } // end onItemClick
+        }); // end mListView.setOnItemClickListener
+    } // end onActivityCreated
 
     @Override
     public void onAttach(Activity activity) {
@@ -151,29 +209,8 @@ public class MasterFragment extends Fragment {
             mListener = (OnFragmentInteractionListener)activity;
         } else {
             throw new IllegalArgumentException("Containing activity must implement OnFragmentInteractionLIstener interface.");
-        }
-        /*
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-        */
-    }
-
-
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+        } // end else
+    } // end onAttach
 
     private class GetMovieData extends AsyncTask<URL, Integer, JSONObject> {
 
@@ -194,15 +231,10 @@ public class MasterFragment extends Fragment {
                     break;
                 } catch (Exception e) {
                     Log.e(TAG, "No connection found.");
-                }
-            }
+                } // end catch
+            } // end for loop
 
             Log.i(TAG, "Data Received: " + jsonString);
-
-            // Convert the API String to a JSONObject
-
-            //JSONObject apiData;
-            //JSONArray apiArray;
 
             try {
                 apiData = new JSONObject(jsonString);
@@ -212,28 +244,18 @@ public class MasterFragment extends Fragment {
                 apiData = null;
             }
 
-            try {
-                /*
-                apiData = (apiData != null) ? apiData.getJSONArray("movies").getJSONObject(0) : null;
-                Log.i(TAG, "Movies: " + apiData.toString());
-                */
+            // Call custom method to parse json
+            parseJSON(apiData);
 
-                apiArray = (apiData != null) ? apiData.getJSONArray("movies") : null;
-                Log.d("apiArray", apiArray.toString());
-                apiData = (apiData != null) ? apiData.getJSONArray("movies").getJSONObject(0) : null;
-                Log.i(TAG, "Checking" + apiData.toString());
+            /*  Not being used.  Trying to create custom object and save it out.
+            //Create custom MovieObj
+            movieObj = new MovieObj();
+            movieObj.setMovieObj(apiData);
+            */
 
-                listContents = new ArrayList<String>(apiArray.length());
-                length = apiArray.length();
-
-                for (int i = 0; i < length; i++){
-                    listContents.add(apiArray.getJSONObject(i).getString("title"));
-                }
-                Log.i(TAG, listContents.toString());
-
-            } catch (Exception e) {
-                Log.e(TAG, "Failure to parse data.");
-            }
+            // Save data to file
+            String str = apiArray.toString();
+            writeDataToFile(FILENAME, str);
 
             return apiData;
         } // End of DoInBackground
@@ -241,22 +263,110 @@ public class MasterFragment extends Fragment {
         protected void onPostExecute(JSONObject apiData){
             Log.i(TAG, "onPostExecute working.");
             popListView(listContents);
-
             EditText query = (EditText)view.findViewById(R.id.editText);
             query.setText("");
 
-
-        }
+        } // end onPostExecute
     } // End of GetMovieData
 
+    private void parseJSON(JSONObject obj){
+        try {
+            apiArray = (obj != null) ? obj.getJSONArray("movies") : null;
+            Log.d("apiArray", apiArray.toString());
+            obj = (obj != null) ? obj.getJSONArray("movies").getJSONObject(0) : null;
+            Log.i(TAG, "Checking" + obj.toString());
 
+            listContents = new ArrayList<String>(obj.length());
+            length = apiArray.length();
+
+            for (int i = 0; i < length; i++){
+                listContents.add(apiArray.getJSONObject(i).getString("title"));
+            } // end for loop to add titles to listContents array
+            Log.i(TAG, listContents.toString());
+
+        } catch (Exception e) {
+            Log.e(TAG, "Failure to parse data.");
+        } // end catch
+    } // end parseJSON method
+
+    // Custom method to populate the listview
     private void popListView(List currentList){
         Log.i(TAG, "popListView working.");
-
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, currentList);
         mListView.setAdapter(arrayAdapter);
+    } // end popListView
 
-    }
-}
+    // Custom method to save data
+    private void writeDataToFile(String _filename, String _data) {
+
+        try {
+            FileOutputStream fos = this.getActivity().openFileOutput(_filename, this.getActivity().MODE_PRIVATE);
+            fos.write(_data.getBytes());
+            fos.close();
+            Log.i(TAG, "Data Saved.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        /// Having trouble getting object to save **Not Serializable error
+        /*
+        try{
+            FileOutputStream fos = this.getActivity().openFileOutput(_filename, this.getActivity().MODE_PRIVATE);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            oos.writeObject(mObj);
+            oos.close();
+            Log.i(TAG, "Data Saved.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        */
+    } // end of writeDataToFile
+
+    // Custom method to load stored data
+    private String pullDataFromFile(String _filename){
+
+        try{
+            FileInputStream fin = this.getActivity().openFileInput(_filename);
+            InputStreamReader inReader = new InputStreamReader(fin);
+            BufferedReader reader = new BufferedReader(inReader);
+
+            StringBuffer buffer = new StringBuffer();
+            String text;
+
+            while ((text = reader.readLine()) != null){
+                buffer.append(text + "\n");
+            }
+            reader.close();
+            return buffer.toString().trim();
+
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return null;
+    } // end pullDataFromFile method
+
+    // custom alert method
+    private void showAlert(String title, String message){
+        new AlertDialog.Builder(getActivity())
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    } // end showAlert method
+
+    // custom toast method
+    private void makeToast(String message){
+        Toast toast = Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT);
+        toast.show();
+    } // end makeToast
+} // end MasterFragment
 
 

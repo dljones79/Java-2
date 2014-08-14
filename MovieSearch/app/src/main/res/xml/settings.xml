@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="App Preferences" >
+
+        <Preference
+            android:key="WIFI_BUTTON"
+            android:summary="Use WIFI Data."
+            android:title="WIFI" />
+
+        <Preference
+            android:key="MOBILE_BUTTON"
+            android:summary="Use MOBILE Data."
+            android:title="MOBILE" />
+
+        <Preference
+            android:key="OFF_BUTTON"
+            android:summary="Turn Data Off."
+            android:title="OFF" />
+
+        <Preference
+            android:key="CLOSE_SETTINGS"
+            android:summary="Close settings."
+            android:title="Close Settings" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

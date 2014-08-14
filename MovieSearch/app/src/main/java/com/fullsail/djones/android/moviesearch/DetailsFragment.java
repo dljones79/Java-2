@@ -1,3 +1,7 @@
+// David Jones
+// Java 2 - 1408
+// Full Sail University
+
 package com.fullsail.djones.android.moviesearch;
 
 

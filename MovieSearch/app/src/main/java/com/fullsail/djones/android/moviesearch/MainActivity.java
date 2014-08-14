@@ -29,8 +29,6 @@ import butterknife.OnClick;
 public class MainActivity extends Activity implements MasterFragment.OnFragmentInteractionListener {
 
     final String TAG = "Connected App";
-    Boolean isConnected = false;    // This is to test connection
-    ConnectionDetection detector;   // ConnectionDetection Class
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +39,20 @@ public class MainActivity extends Activity implements MasterFragment.OnFragmentI
             MasterFragment frag = MasterFragment.newInstance();
             getFragmentManager().beginTransaction().replace(R.id.container1, frag, MasterFragment.TAG).commit();
         }
+
+        // Set up a click listener for the settings button
+        // Load the PrefFragment
+        Button settings = (Button) findViewById(R.id.settingsButton);
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PrefFragment pFrag = PrefFragment.newInstance();
+                getFragmentManager().beginTransaction().replace(R.id.container2, pFrag, PrefFragment.TAG).commit();
+            }
+        });
     }
 
+    // Custom method to display the DetailsFragment with passed data
     public void displayMovie(String _text, JSONObject _object){
         DetailsFragment frag = (DetailsFragment)getFragmentManager().findFragmentByTag(DetailsFragment.TAG);
 
@@ -54,4 +64,5 @@ public class MainActivity extends Activity implements MasterFragment.OnFragmentI
             frag.setMovieObject(_object);
         }
     }
+
 }
