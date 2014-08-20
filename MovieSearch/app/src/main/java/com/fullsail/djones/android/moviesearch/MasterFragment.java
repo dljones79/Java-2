@@ -130,7 +130,7 @@ public class MasterFragment extends Fragment {
                     try {
                         // Set up url string for API request
                         String baseURL = "http://api.rottentomatoes.com/api/public/v1.0/movies.json?q=";
-                        URL queryURL = new URL(baseURL + queryText + "&page_limit=5&page=1&apikey=shw7dfp2wfn754x5ak7gyw4h");
+                        URL queryURL = new URL(baseURL + queryText + "&page_limit=20&page=1&apikey=shw7dfp2wfn754x5ak7gyw4h");
                         Log.i(TAG, queryURL.toString());
                         new GetMovieData().execute(queryURL);
                     } catch (Exception e) {
