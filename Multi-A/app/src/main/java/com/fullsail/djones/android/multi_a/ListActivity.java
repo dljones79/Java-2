@@ -1,3 +1,8 @@
+// David Jones
+// Java 2 - 1408
+// Week 3 Multi Activity App
+// Full Sail University
+
 package com.fullsail.djones.android.multi_a;
 
 import android.app.Activity;
@@ -12,25 +17,13 @@ public class ListActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
-    }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.list, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        if (savedInstanceState == null) {
+            ListFragment frag = ListFragment.newInstance();
+            getFragmentManager().beginTransaction().replace(R.id.container1, frag, ListFragment.TAG).commit();
         }
-        return super.onOptionsItemSelected(item);
-    }
-}
+
+
+    } // end of onCreate
+
+} // end of ListActivity
