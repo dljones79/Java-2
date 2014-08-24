@@ -13,7 +13,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -23,6 +29,16 @@ import android.widget.Button;
 public class ListFragment extends Fragment {
 
     public static final String TAG = "ListFragment.TAG";
+    public static final String ARG_Text = "ListFragment.ARG_TEXT";
+    private ArrayList<Contact> contacts;
+    private static Contact passedContact = null;
+    private ContactListener mListener;
+
+    public interface ContactListener {
+        public void viewContact(int position);
+        public void deleteContact(int position);
+        public ArrayList<Contact> getContacts();
+    }
 
     public static ListFragment newInstance() {
         ListFragment fragment = new ListFragment();
@@ -61,7 +77,18 @@ public class ListFragment extends Fragment {
                 getFragmentManager().beginTransaction().replace(R.id.container1, frag, AddFragment.TAG).commit();
             }
         });
+
+        if (passedContact != null){
+            contacts.add(passedContact);
+
+            ListView contactListView = (ListView) getView().findViewById(R.id.contactList);
+            ContactAdapter contactAdapter = new ContactAdapter(getActivity(), contacts);
+            contactListView.setAdapter(contactAdapter);
+        }
+
+    } // end onActivityCreated
+
+    public void setContactObject(Contact contact){
+        passedContact = contact;
     }
-
-
 }

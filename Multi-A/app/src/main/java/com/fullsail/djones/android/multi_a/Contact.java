@@ -9,13 +9,15 @@ public class Contact implements Serializable {
 
     final String TAG = "Contact Class";
 
-    private static final long serialVersionUID = 6738492837482849392L;
-
     private String mFirstName;
     private String mLastName;
     private String mPhoneNumber;
 
-    public Contact(){}
+    public Contact(){
+        mFirstName = "";
+        mLastName = "";
+        mPhoneNumber ="";
+    }
 
     public Contact(String first, String last, String phone){
         mFirstName = first;

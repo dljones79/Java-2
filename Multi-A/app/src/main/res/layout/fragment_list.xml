@@ -9,7 +9,7 @@
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="440dp"
-        android:id="@+id/listView"
+        android:id="@+id/contactList"
         android:layout_gravity="center_horizontal|top" />
 
     <Button
