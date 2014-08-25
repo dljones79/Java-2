@@ -1,3 +1,8 @@
+// David Jones
+// Java 2 - 1408
+// Week 3 Project - Multi Activity Application
+// Full Sail University
+
 package com.fullsail.djones.android.multiactivity;
 
 
@@ -12,6 +17,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.List;
 
 
 /**

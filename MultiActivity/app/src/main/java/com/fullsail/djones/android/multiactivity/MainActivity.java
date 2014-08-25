@@ -1,3 +1,8 @@
+// David Jones
+// Java 2 - 1408
+// Week 3 Project - Multi Activity Application
+// Full Sail University
+
 package com.fullsail.djones.android.multiactivity;
 
 import android.app.Activity;
@@ -9,8 +14,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -22,6 +31,8 @@ public class MainActivity extends Activity implements com.fullsail.djones.androi
     private ArrayList<Contact> contacts = new ArrayList<Contact>();
     private final static String TAG = "MainActivity.TAG";
     static final String STATE_ARRAY = "contacts";
+    public static final String OBJFILENAME = "data.txt";
+    private ContactArray cArray = new ContactArray();
 
     public static final int DELETEREQUEST = 1;
     public static final String DELETECONTACTEXTRA = "com.fullsail.djones.android.multiactivity.Delete";
@@ -31,6 +42,7 @@ public class MainActivity extends Activity implements com.fullsail.djones.androi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Attempting to load savedInstanceState here....currently not working as intended.
         try {
             contacts = (ArrayList<Contact>) savedInstanceState.getSerializable(STATE_ARRAY);
             Log.i(TAG, "Loaded data from saved instance state.");
@@ -38,6 +50,16 @@ public class MainActivity extends Activity implements com.fullsail.djones.androi
             Log.e(TAG, "Noting loaded from saved Instance State.");
         }
 
+        // This try/catch block is attempting to read from saved file...currently not working as intended.
+        try {
+            readFromFile(OBJFILENAME);
+            Log.i(TAG, "Read from file.");
+        } catch (Exception e){
+            e.printStackTrace();
+            Log.i(TAG, "Nothing to read.");
+        }
+
+        // Get intent passed from previous activity
         Intent intent = getIntent();
         if (intent != null) {
             contact.setFirstName(intent.getStringExtra("firstName"));
@@ -49,6 +71,7 @@ public class MainActivity extends Activity implements com.fullsail.djones.androi
             try {
                 Log.i(TAG, intent.getStringExtra("firstName"));
                 contacts.add(contact);
+                writeObjectToFile(OBJFILENAME, contacts);
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -73,6 +96,7 @@ public class MainActivity extends Activity implements com.fullsail.djones.androi
         }
     }
 
+    // Save instanceSate
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putSerializable(STATE_ARRAY, contacts);
@@ -89,6 +113,7 @@ public class MainActivity extends Activity implements com.fullsail.djones.androi
         Log.i("Contacts from storage: ", contacts.toString());
     }
 
+    // Method called upon pressing delete button on Details Frag
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         Log.i(TAG, "onActivityResult running.");
 
@@ -102,6 +127,40 @@ public class MainActivity extends Activity implements com.fullsail.djones.androi
             Log.i(TAG, "resultCode check failed.");
         }
     }
+
+    private void writeObjectToFile(String _filename, ArrayList<Contact> _obj){
+        try {
+            FileOutputStream fos = this.openFileOutput(_filename, this.MODE_PRIVATE);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            oos.writeObject(_obj);
+
+            Log.i(TAG, "Data Saved.");
+
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void readFromFile(String _filename){
+        try {
+            FileInputStream fin = openFileInput(_filename);
+            ObjectInputStream oin = new ObjectInputStream(fin);
+
+            try {
+                cArray = (ContactArray)oin.readObject();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    // Interface Methods Below
 
     @Override
     public void viewContact(int position) {

@@ -1,3 +1,8 @@
+// David Jones
+// Java 2 - 1408
+// Week 3 Project - Multi Activity Application
+// Full Sail University
+
 package com.fullsail.djones.android.multiactivity;
 
 import android.app.Activity;
