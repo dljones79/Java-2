@@ -31,6 +31,7 @@ import java.util.List;
 public class AddFragment extends Fragment {
 
     public static final String TAG = "AddFragment.TAG";
+    final Contact contact = new Contact();
 
     public AddFragment() {
         // Required empty public constructor
@@ -54,7 +55,7 @@ public class AddFragment extends Fragment {
 
         View view = getView();
 
-        final Contact contact = new Contact();
+
         final EditText first = (EditText) view.findViewById(R.id.fNameText);
         final EditText last = (EditText) view.findViewById(R.id.lNameText);
         final EditText phone = (EditText) view.findViewById(R.id.pNumText);
@@ -76,9 +77,18 @@ public class AddFragment extends Fragment {
                 intent.putExtra("firstName", contact.getFirstName());
                 intent.putExtra("lastName", contact.getLastName());
                 intent.putExtra("phoneNumber", contact.getPhoneNumber());
-                startActivity(intent);
+                finish();
+
+                //startActivity(intent);
 
             }
         });
+    }
+
+    private void finish() {
+        Intent data = new Intent();
+        data.putExtra("returnKey", contact);
+        getActivity().setResult(Activity.RESULT_OK, data);
+        super.getActivity().finish();
     }
 }

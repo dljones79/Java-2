@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,6 +36,9 @@ public class ListFragment extends Fragment {
     private ArrayList<Contact> passedContacts;
     ArrayAdapter<String> mOSAdapter;
     private ContactListener mListener;
+    private static final int REQUEST_CODE = 2;
+
+    public static final String SAVECONTACTEXTRA = "com.fullsail.djones.android.multiactivity.Save";
 
     public ListFragment() {
         // Required empty public constructor
@@ -88,7 +92,7 @@ public class ListFragment extends Fragment {
                 Log.i(TAG, "Button Pressed.");
 
                 Intent intent = new Intent(getActivity(), AddActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_CODE);
             }
         });
 
@@ -108,6 +112,17 @@ public class ListFragment extends Fragment {
                 return true;
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        if (resultCode == getActivity().RESULT_OK && requestCode == REQUEST_CODE){
+            if (data.hasExtra("returnKey")){
+                passedContacts.add((Contact) data.getSerializableExtra("returnKey"));
+                com.fullsail.djones.android.multiactivity.ListFragment lf = (com.fullsail.djones.android.multiactivity.ListFragment) getFragmentManager().findFragmentById(R.id.mainContainer);
+                lf.updateListData();
+            }
+        }
     }
 
     public void setContacts (ArrayList<Contact> contacts) {

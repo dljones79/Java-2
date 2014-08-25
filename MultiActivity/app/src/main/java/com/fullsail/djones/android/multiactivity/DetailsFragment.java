@@ -70,14 +70,16 @@ public class DetailsFragment extends Fragment {
         final TextView phone = (TextView) getView().findViewById(R.id.phoneNum);
         phone.setText(mListener.getContact().getPhoneNumber());
 
-        Button deleteButton = (Button) getView().findViewById(R.id.deleteButton);
-        deleteButton.setVisibility(View.VISIBLE);
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.deleteContact();
-            }
-        });
+        if (mListener.getDelete() > 0) {
+            Button deleteButton = (Button) getView().findViewById(R.id.deleteButton);
+            deleteButton.setVisibility(View.VISIBLE);
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mListener.deleteContact();
+                }
+            });
+        }
 
         Button shareButton = (Button) getView().findViewById(R.id.shareButton);
         shareButton.setOnClickListener(new View.OnClickListener() {
