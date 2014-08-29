@@ -79,6 +79,7 @@ public class DetailsFragment extends Fragment {
                     mListener.deleteContact();
                 }
             });
+            deleteButton.performClick();
         }
 
         Button shareButton = (Button) getView().findViewById(R.id.shareButton);

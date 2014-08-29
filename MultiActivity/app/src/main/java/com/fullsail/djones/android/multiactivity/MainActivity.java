@@ -182,6 +182,7 @@ public class MainActivity extends Activity implements com.fullsail.djones.androi
 
         return true;
     }
+
     // Interface Methods Below
 
     @Override

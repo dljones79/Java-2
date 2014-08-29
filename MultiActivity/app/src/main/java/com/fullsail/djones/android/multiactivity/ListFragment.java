@@ -8,11 +8,15 @@ package com.fullsail.djones.android.multiactivity;
 
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +25,8 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 
 /**
@@ -38,6 +40,8 @@ public class ListFragment extends Fragment {
     ArrayAdapter<String> mOSAdapter;
     private ContactListener mListener;
     private static final int REQUEST_CODE = 2;
+    private ActionMode actionMode;
+    private int contactSelected = -1;
 
     public static final String SAVECONTACTEXTRA = "com.fullsail.djones.android.multiactivity.Save";
 
@@ -108,7 +112,15 @@ public class ListFragment extends Fragment {
         contactListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int i, long l) {
-                mListener.deleteContact(i);
+
+                if (actionMode != null){
+                    return false;
+                }
+
+                contactSelected = i;
+                actionMode = getActivity().startActionMode(actionModeCallback);
+
+                //mListener.deleteContact(i);
                 Log.i(TAG, "Long Click.");
                 return true;
             }
@@ -155,4 +167,38 @@ public class ListFragment extends Fragment {
         BaseAdapter contactAdapter = (BaseAdapter) contactList.getAdapter();
         contactAdapter.notifyDataSetChanged();
     }
+
+    private ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+            MenuInflater inflater = actionMode.getMenuInflater();
+            inflater.inflate(R.menu.delete, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+            switch (menuItem.getItemId()) {
+                case R.id.deleteButton:
+
+                    mListener.deleteContact(contactSelected);
+                    actionMode.finish();
+                    return true;
+            }
+
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode actionMode) {
+            actionMode = null;
+        }
+    };
+
+
 }
