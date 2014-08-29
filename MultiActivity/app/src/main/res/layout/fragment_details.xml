@@ -77,11 +77,12 @@
         android:layout_height="wrap_content"
         android:text="Delete"
         android:id="@+id/deleteButton"
-        android:layout_marginTop="145dp"
-        android:layout_toEndOf="@+id/phoneNum"
+        android:layout_marginTop="147dp"
+        android:layout_toEndOf="@+id/shareButton"
+        android:visibility="invisible"
         android:layout_below="@+id/phoneNum"
-        android:layout_toRightOf="@+id/phoneNum"
-        android:visibility="invisible" />
+        android:layout_toRightOf="@+id/shareButton"
+        android:layout_marginLeft="72dp" />
 
     <Button
         android:layout_width="wrap_content"

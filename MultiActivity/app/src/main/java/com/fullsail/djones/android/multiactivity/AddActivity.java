@@ -7,8 +7,11 @@ package com.fullsail.djones.android.multiactivity;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Button;
 
 
 public class AddActivity extends Activity {
@@ -26,4 +29,23 @@ public class AddActivity extends Activity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.save, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()) {
+            case R.id.action_save:
+                Log.i(TAG, "Save Button Pressed.");
+                Button addButton = (Button) this.findViewById(R.id.saveButton);
+                addButton.performClick();
+                break;
+        }
+
+        return true;
+    }
 }
