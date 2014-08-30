@@ -1,3 +1,6 @@
+// David Jones
+// Java 2 - Week 4
+
 package com.fullsail.djones.android.case3;
 
 
