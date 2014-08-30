@@ -3,9 +3,11 @@ package com.fullsail.djones.android.case1;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -45,6 +47,9 @@ public class MyActivity extends Activity implements ActionBar.OnNavigationListen
                                 getString(R.string.title_section1),
                                 getString(R.string.title_section2),
                                 getString(R.string.title_section3),
+                                getString(R.string.title_section4),
+                                getString(R.string.title_section5),
+                                getString(R.string.title_section6)
                         }),
                 this);
     }
@@ -87,11 +92,21 @@ public class MyActivity extends Activity implements ActionBar.OnNavigationListen
 
     @Override
     public boolean onNavigationItemSelected(int position, long id) {
+        /*
         // When the given dropdown item is selected, show its contents in the
         // container view.
         getFragmentManager().beginTransaction()
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();
+        */
+        String[] strings = getResources().getStringArray(R.array.action_list);
+
+        DetailsFragment newFragment = new DetailsFragment();
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+
+        ft.replace(R.id.container, newFragment, strings[position]);
+
+        ft.commit();
         return true;
     }
 
@@ -124,6 +139,9 @@ public class MyActivity extends Activity implements ActionBar.OnNavigationListen
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_my, container, false);
+
+
+
             return rootView;
         }
     }
