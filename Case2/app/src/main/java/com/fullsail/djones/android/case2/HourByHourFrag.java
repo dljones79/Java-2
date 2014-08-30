@@ -1,7 +1,8 @@
 package com.fullsail.djones.android.case2;
 
 
-
+// David Jones
+// Java 2 - Week 4
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
