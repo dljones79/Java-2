@@ -1,0 +1,59 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.fullsail.djones.android.case2.CurrentWeatherFrag">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Current Weather"
+        android:id="@+id/textView"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="95 Degrees"
+        android:id="@+id/textView2"
+        android:layout_gravity="center"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="156dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Sunny"
+        android:id="@+id/textView4"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Visibility:"
+        android:id="@+id/textView5"
+        android:layout_below="@+id/textView4"
+        android:layout_toLeftOf="@+id/textView4"
+        android:layout_toStartOf="@+id/textView4"
+        android:layout_marginTop="45dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="10 Miles"
+        android:id="@+id/textView6"
+        android:layout_toEndOf="@+id/textView4"
+        android:layout_alignTop="@+id/textView5"
+        android:layout_toRightOf="@+id/textView4" />
+
+</RelativeLayout>
